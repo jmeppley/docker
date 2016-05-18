@@ -8,7 +8,6 @@ RUN ["bash", "/root/conda_install.sh"]
 ENV PATH /root/miniconda3/bin:$PATH
 
 # http://bugs.python.org/issue19846
-# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 ENV PYTHONIOENCODING utf8
 
