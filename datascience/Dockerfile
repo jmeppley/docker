@@ -1,12 +1,18 @@
-FROM joshuacook/base
+FROM joshuacook/minimal-notebook
 
 MAINTAINER Joshua Cook <me@joshuacook.me>
 
 USER root
 
-# R pre-requisites
+# Provision Image
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    python2.7 \
+    python-dev \
+    python-pip \
+    python3 \
+    python3-dev \
+    python3-pip \
     fonts-dejavu \
     gfortran \
     gcc && apt-get clean
@@ -16,9 +22,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends libav-tools && \
     apt-get clean
 
-USER jovyan
-
-# Install Python 3 packages
+# Provision scipy/numpy
 RUN conda install --yes \
     'ipywidgets=4.1*' \
     'pandas=0.17*' \
@@ -82,17 +86,21 @@ RUN conda install --yes \
     'r-rcurl=1.95*' \
     'r-randomforest=4.6*' && conda clean -tipsy
 
-USER root
-
-# Install MongoEngine
-RUN pip install mongoengine
-RUN pip3 install mongoengine
+# Install database handling libraries
+RUN pip install sqlalchemy redis
+RUN pip3 install sqlalchemy redis
 
 # Install Python 2 kernel spec globally to avoid permission problems when NB_UID
 # switching at runtime.
 RUN $CONDA_DIR/envs/python2/bin/python \
     $CONDA_DIR/envs/python2/bin/ipython \
     kernelspec install-self
+
+RUN conda install -c jjhelmus feather-format=0.1.0
+
+RUN conda install -c anaconda nltk=3.2.1
+
+RUN conda install beautifulsoup4
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER jovyan
